@@ -242,12 +242,16 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	protected <T> T doGetBean(
 			String name, @Nullable Class<T> requiredType, @Nullable Object[] args, boolean typeCheckOnly)
 			throws BeansException {
-
+		// 提取对应的beanName
+		// 对name进行格式化（如别名、&前缀的处理等）
 		String beanName = transformedBeanName(name);
 		Object bean;
 
 		// Eagerly check singleton cache for manually registered singletons.
+		// 提前检查单例缓存中是否有手动注册的单例对象，跟循环依赖有关联
+		// 根据beanName去获取对应的bean 对象，getSingleton方法就是解决循环依赖的关键
 		Object sharedInstance = getSingleton(beanName);
+		// 如果bean的单例对象找到了，且没有创建bean实例时要使用的参数
 		if (sharedInstance != null && args == null) {
 			if (logger.isTraceEnabled()) {
 				if (isSingletonCurrentlyInCreation(beanName)) {
@@ -318,16 +322,29 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 
 				// Create bean instance.
+				// 创建bean的实例对象
+				// 单例
 				if (mbd.isSingleton()) {
+					// 返回以beanName的（原始）单例对象，如果尚未注册，则使用singletonFactory创建并注册一个对象
+					// 获取单例Bean
+					// 第二个参数是ObjectFactory<T>类型，属于函数式接口，只有getObject()一个方法，所以支持lambda表达式，
+					// lambda中相当于匿名内部类，就是实现了ObjectFactory#getObject()方法
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							// 为给定的合并后BeanDefinition（和参数）创建一个bean实例
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {
 							// Explicitly remove instance from singleton cache: It might have been put there
 							// eagerly by the creation process, to allow for circular reference resolution.
 							// Also remove any beans that received a temporary reference to the bean.
+							/**
+							 * 显示地从单例缓存中删除实例：它可能是由创建过程急切地放在那里，以允许循环引用解析。
+							 * 接收到该Bean临时引用的任何Bean
+							 * 销毁给定的bean。如果找到相应的一次性Bean实例，则委托给destroyBean
+							 */
 							destroySingleton(beanName);
+							// 重新抛出ex
 							throw ex;
 						}
 					});

@@ -108,8 +108,11 @@ class BeanDefinitionValueResolver {
 	public Object resolveValueIfNecessary(Object argName, @Nullable Object value) {
 		// We must check each value to see whether it requires a runtime reference
 		// to another bean to be resolved.
+		// RuntimeBeanReference：当属性值对象是工厂中另一个Bean的引用时，使用不可变的占位符类，在运行时进行解析
 		if (value instanceof RuntimeBeanReference) {
+			// 将value强转成RuntimeBeanReference对象
 			RuntimeBeanReference ref = (RuntimeBeanReference) value;
+			// 解析出对应ref所封装的Bean元信息（即Bean名、Bean类型）的Bean对象
 			return resolveReference(argName, ref);
 		}
 		else if (value instanceof RuntimeBeanNameReference) {
@@ -301,11 +304,17 @@ class BeanDefinitionValueResolver {
 	@Nullable
 	private Object resolveReference(Object argName, RuntimeBeanReference ref) {
 		try {
+			// 定义用于一个存储bean对象的变量
 			Object bean;
+			// 获取另一个Bean引用的Bean类型
 			Class<?> beanType = ref.getBeanType();
+			// 如果引用来自父工厂
 			if (ref.isToParent()) {
+				// 获取父工厂
 				BeanFactory parent = this.beanFactory.getParentBeanFactory();
+				// 如果没有父工厂
 				if (parent == null) {
+					// 抛出Bean创建异常
 					throw new BeanCreationException(
 							this.beanDefinition.getResourceDescription(), this.beanName,
 							"Cannot resolve reference to bean " + ref +
@@ -319,14 +328,20 @@ class BeanDefinitionValueResolver {
 				}
 			}
 			else {
+				// 定义一个用于存储解析出来的Bean名的变量
 				String resolvedName;
 				if (beanType != null) {
+					// 解析与beanType唯一匹配的Bean实例，包括其Bean名
 					NamedBeanHolder<?> namedBean = this.beanFactory.resolveNamedBean(beanType);
+					// 让bean引用nameBean所封装的Bean对象
 					bean = namedBean.getBeanInstance();
+					// 让resolvedName引用nameBean所封装的Bean对象
 					resolvedName = namedBean.getBeanName();
 				}
 				else {
+					// 让resolvedName引用ref所包装的Bean名
 					resolvedName = String.valueOf(doEvaluate(ref.getBeanName()));
+					// 获取resolvedName的Bean对象
 					bean = this.beanFactory.getBean(resolvedName);
 				}
 				this.beanFactory.registerDependentBean(resolvedName, this.beanName);

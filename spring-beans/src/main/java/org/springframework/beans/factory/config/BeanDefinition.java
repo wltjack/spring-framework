@@ -43,6 +43,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Scope identifier for the standard singleton scope: {@value}.
 	 * <p>Note that extended bean factories might support further scopes.
+	 * <p>标准单例作用域的作用域标识符:"singleton"。注意，扩展的bean工厂可能支持更多的作用域。
 	 * @see #setScope
 	 * @see ConfigurableBeanFactory#SCOPE_SINGLETON
 	 */
@@ -51,6 +52,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Scope identifier for the standard prototype scope: {@value}.
 	 * <p>Note that extended bean factories might support further scopes.
+	 * <p>标准原型范围的范围标识符:"prototype"。注意，扩展的bean工厂可能支持更多的作用域。
 	 * @see #setScope
 	 * @see ConfigurableBeanFactory#SCOPE_PROTOTYPE
 	 */
@@ -87,6 +89,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Set the name of the parent definition of this bean definition, if any.
+	 * <p>设置此bean定义的父定义的名称(如果有的话)。
 	 */
 	void setParentName(@Nullable String parentName);
 
@@ -100,6 +103,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Specify the bean class name of this bean definition.
 	 * <p>The class name can be modified during bean factory post-processing,
 	 * typically replacing the original class name with a parsed variant of it.
+	 * <p></p>指定此bean定义的bean类名。
+	 * 可以在bean工厂后处理期间修改类名，通常用经过解析的类名的变体替换原始类名。
 	 * @see #setParentName
 	 * @see #setFactoryBeanName
 	 * @see #setFactoryMethodName
@@ -123,6 +128,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Override the target scope of this bean, specifying a new scope name.
+	 * <p></p>重写此bean的目标作用域，并指定新的作用域名称。
 	 * @see #SCOPE_SINGLETON
 	 * @see #SCOPE_PROTOTYPE
 	 */
@@ -139,6 +145,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Set whether this bean should be lazily initialized.
 	 * <p>If {@code false}, the bean will get instantiated on startup by bean
 	 * factories that perform eager initialization of singletons.
+	 * <p></p>设置这个bean是否应该延迟初始化。如果为false，则bean将在启动时由执行单例初始化的bean工厂实例化。
 	 */
 	void setLazyInit(boolean lazyInit);
 
@@ -178,6 +185,8 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * Set whether this bean is a primary autowire candidate.
 	 * <p>If this value is {@code true} for exactly one bean among multiple
 	 * matching candidates, it will serve as a tie-breaker.
+	 * <p></p>设置此bean是否为主要自动装配候选bean。
+	 * 如果在多个匹配候选bean中，只有一个bean的该值为真，则它将作为胜负决定符。
 	 */
 	void setPrimary(boolean primary);
 
@@ -218,12 +227,14 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	/**
 	 * Return the constructor argument values for this bean.
 	 * <p>The returned instance can be modified during bean factory post-processing.
+	 * <p></p>返回此bean的构造函数参数值。返回的实例可以在bean工厂后处理期间进行修改。
 	 * @return the ConstructorArgumentValues object (never {@code null})
 	 */
 	ConstructorArgumentValues getConstructorArgumentValues();
 
 	/**
 	 * Return if there are constructor argument values defined for this bean.
+	 * <p></p>如果为该bean定义了构造函数参数值，则返回。
 	 * @since 5.0.2
 	 */
 	default boolean hasConstructorArgumentValues() {
@@ -335,6 +346,7 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 
 	/**
 	 * Return whether this bean is "abstract", that is, not meant to be instantiated.
+	 * <p></p>返回此bean是否是“抽象的”，即不打算被实例化。
 	 */
 	boolean isAbstract();
 
@@ -350,6 +362,9 @@ public interface BeanDefinition extends AttributeAccessor, BeanMetadataElement {
 	 * <p>Allows for retrieving the decorated bean definition, if any.
 	 * <p>Note that this method returns the immediate originator. Iterate through the
 	 * originator chain to find the original BeanDefinition as defined by the user.
+	 * <p></p>返回原始的BeanDefinition，如果没有则返回null。
+	 * 允许检索装饰过的bean定义(如果有的话)。
+	 * 注意，此方法返回直接发起者。遍历发起者链以查找用户定义的原始BeanDefinition。
 	 */
 	@Nullable
 	BeanDefinition getOriginatingBeanDefinition();

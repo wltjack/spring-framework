@@ -92,6 +92,9 @@ public abstract class PlaceholderConfigurerSupport extends PropertyResourceConfi
 		implements BeanNameAware, BeanFactoryAware {
 
 	/** Default placeholder prefix: {@value}. */
+	/**
+	 * 默认的占位符前缀
+	 */
 	public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
 
 	/** Default placeholder suffix: {@value}. */

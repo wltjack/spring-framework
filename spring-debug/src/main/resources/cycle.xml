@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+				http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+	<bean id="a1" class="com.wltjack.springdebug.cycle.dependency.entity.A1">
+		<property name="b1" ref="b1"/>
+	</bean>
+
+	<bean id="b1" class="com.wltjack.springdebug.cycle.dependency.entity.B1">
+		<property name="a1" ref="a1"/>
+	</bean>
+
+	<bean id="c1" class="com.wltjack.springdebug.cycle.dependency.entity.C1">
+		<property name="c1" ref="c1"/>
+	</bean>
+</beans>
