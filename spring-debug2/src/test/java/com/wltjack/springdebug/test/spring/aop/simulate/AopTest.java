@@ -23,4 +23,13 @@ public class AopTest {
 		e1.m1();
 	}
 
+	@Test
+	public void test2(){
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AopTestConfig1.class);
+		F1 f1 = context.getBean(F1.class);
+		f1.m1();
+		E1 e1 = context.getBean(E1.class);
+		e1.m1();
+	}
+
 }

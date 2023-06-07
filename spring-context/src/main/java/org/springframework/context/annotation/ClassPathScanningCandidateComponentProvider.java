@@ -413,11 +413,16 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 		return candidates;
 	}
 
+	/**
+	 * 扫描候选者组件
+	 */
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
 		try {
+			// 包名转换为文件路径
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			// 根据路径，转换为Resource，本质是一个输入流
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
@@ -426,10 +431,15 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 					logger.trace("Scanning " + resource);
 				}
 				try {
+					// 读取到的类文件的信息
 					MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+					// 合规性验证：
+					// 1、符合excludeFilters规则的，直接排除
+					// 2、符合includeFilters规则的，进行处理
 					if (isCandidateComponent(metadataReader)) {
 						ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 						sbd.setSource(resource);
+						// 判断当前类，是否非抽象类，非接口的
 						if (isCandidateComponent(sbd)) {
 							if (debugEnabled) {
 								logger.debug("Identified candidate component class: " + resource);
@@ -479,12 +489,16 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	/**
+	 * 判断类是否满足Spring扫描条件
+	 * <p></p>
 	 * Determine whether the given class does not match any exclude filter
 	 * and does match at least one include filter.
 	 * @param metadataReader the ASM ClassReader for the class
 	 * @return whether the class qualifies as a candidate component
 	 */
 	protected boolean isCandidateComponent(MetadataReader metadataReader) throws IOException {
+		// 满足任一排除过滤器条件，直接不进行处理
+		// 满足任一包含过滤器条件，才进行处理
 		for (TypeFilter tf : this.excludeFilters) {
 			if (tf.match(metadataReader, getMetadataReaderFactory())) {
 				return false;
@@ -495,6 +509,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				return isConditionMatch(metadataReader);
 			}
 		}
+		// 其他情况，不满足包含过滤器的，也不进行处理
 		return false;
 	}
 

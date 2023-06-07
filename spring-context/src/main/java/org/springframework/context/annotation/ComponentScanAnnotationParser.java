@@ -72,8 +72,12 @@ class ComponentScanAnnotationParser {
 		this.registry = registry;
 	}
 
-
+	/**
+	 * 解析@ComponentScan注解，进行扫描
+	 */
 	public Set<BeanDefinitionHolder> parse(AnnotationAttributes componentScan, String declaringClass) {
+		// 初始化ClassPathBeanDefinitionScanner,初始化时会注册默认的includeFilters，
+		// 其中包含处理@Component的AnnotationTypeFilter
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
 
@@ -93,11 +97,14 @@ class ComponentScanAnnotationParser {
 
 		scanner.setResourcePattern(componentScan.getString("resourcePattern"));
 
+		// 处理在@ComponentScan中配置的信息
+		// 解析配置的includeFilters和excludeFilters，添加我们自定义的includeFilters，在ComponentScan中配置
 		for (AnnotationAttributes filter : componentScan.getAnnotationArray("includeFilters")) {
 			for (TypeFilter typeFilter : typeFiltersFor(filter)) {
 				scanner.addIncludeFilter(typeFilter);
 			}
 		}
+		// 添加我们自定义的excludeFilters，在ComponentScan中配置
 		for (AnnotationAttributes filter : componentScan.getAnnotationArray("excludeFilters")) {
 			for (TypeFilter typeFilter : typeFiltersFor(filter)) {
 				scanner.addExcludeFilter(typeFilter);
@@ -109,6 +116,7 @@ class ComponentScanAnnotationParser {
 			scanner.getBeanDefinitionDefaults().setLazyInit(true);
 		}
 
+		// 解析配置的扫描路径（扫描路径可以配置多个）
 		Set<String> basePackages = new LinkedHashSet<>();
 		String[] basePackagesArray = componentScan.getStringArray("basePackages");
 		for (String pkg : basePackagesArray) {
@@ -129,6 +137,7 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		// 进行扫描，把所有的类文件获取到（ASM），获取到类能不能变成BeanDefinition需要看是否合格，放入beanDefinitionMap中
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 

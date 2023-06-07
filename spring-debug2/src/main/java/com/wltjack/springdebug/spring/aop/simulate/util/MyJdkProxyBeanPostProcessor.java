@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.stereotype.Component;
+//import org.springframework.stereotype.Component;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -16,7 +16,7 @@ import java.lang.reflect.Proxy;
  * @author wltjack
  * Created at 2023/2/1 22:16
  */
-@Component
+//@Component
 public class MyJdkProxyBeanPostProcessor implements BeanPostProcessor {
 	private static final Logger LOGGER = LogManager.getLogger(MyJdkProxyBeanPostProcessor.class);
 
@@ -44,7 +44,7 @@ public class MyJdkProxyBeanPostProcessor implements BeanPostProcessor {
 			LOGGER.info("aop before...");
 			Object result = method.invoke(target, args);
 			LOGGER.info("aop after...");
-			return null;
+			return result;
 		}
 	}
 }

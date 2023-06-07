@@ -5,12 +5,14 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 /**
  * ABean
@@ -19,7 +21,7 @@ import javax.annotation.PostConstruct;
  * Created at 2023/1/26 19:48
  */
 @Component
-public class ABean implements BeanNameAware, ApplicationContextAware, InitializingBean {
+public class ABean implements BeanNameAware, ApplicationContextAware, InitializingBean, SmartInitializingSingleton {
 	private static final Logger LOGGER = LogManager.getLogger(ABean.class);
 
 	@Autowired
@@ -43,7 +45,13 @@ public class ABean implements BeanNameAware, ApplicationContextAware, Initializi
 
 	@PostConstruct
 	public void init() {
-		LOGGER.info("6> ABean init()");
+		LOGGER.info("6> ABean init() >> @PostConstruct方法");
+	}
+
+	@PreDestroy
+	public void preDestroy() {
+		LOGGER.info("9> ABean preDestroy() >> @PreDestroy方法");
+
 	}
 
 	@Override
@@ -59,5 +67,10 @@ public class ABean implements BeanNameAware, ApplicationContextAware, Initializi
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		LOGGER.info("5> ABean setApplicationContext: [{}]", applicationContext);
+	}
+
+	@Override
+	public void afterSingletonsInstantiated() {
+		LOGGER.info("8> ABean afterSingletonsInstantiated()");
 	}
 }

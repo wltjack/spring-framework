@@ -91,11 +91,16 @@ final class PostProcessorRegistrationDelegate {
 					processedBeans.add(ppName);
 				}
 			}
+			// 排序
 			sortPostProcessors(currentRegistryProcessors, beanFactory);
+			// 合并 为什么要放入一个list当中？ 是为了执行父类方法
 			registryProcessors.addAll(currentRegistryProcessors);
+			// 遍历执行CCPP 扫描
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
+			// 清空这个集合
 			currentRegistryProcessors.clear();
 
+			// 第二次找，可能因为第一次扫描完成后多了新的 BeanDefinitionRegistryPostProcessors
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {

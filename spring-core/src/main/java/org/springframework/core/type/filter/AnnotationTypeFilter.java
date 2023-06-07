@@ -55,6 +55,7 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 	 * meta-annotation matching, use the constructor that accepts a
 	 * '{@code considerMetaAnnotations}' argument.
 	 * <p>The filter will not match interfaces.
+	 *
 	 * @param annotationType the annotation type to match
 	 */
 	public AnnotationTypeFilter(Class<? extends Annotation> annotationType) {
@@ -64,7 +65,8 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 	/**
 	 * Create a new {@code AnnotationTypeFilter} for the given annotation type.
 	 * <p>The filter will not match interfaces.
-	 * @param annotationType the annotation type to match
+	 *
+	 * @param annotationType          the annotation type to match
 	 * @param considerMetaAnnotations whether to also match on meta-annotations
 	 */
 	public AnnotationTypeFilter(Class<? extends Annotation> annotationType, boolean considerMetaAnnotations) {
@@ -73,9 +75,10 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 
 	/**
 	 * Create a new {@code AnnotationTypeFilter} for the given annotation type.
-	 * @param annotationType the annotation type to match
+	 *
+	 * @param annotationType          the annotation type to match
 	 * @param considerMetaAnnotations whether to also match on meta-annotations
-	 * @param considerInterfaces whether to also match interfaces
+	 * @param considerInterfaces      whether to also match interfaces
 	 */
 	public AnnotationTypeFilter(
 			Class<? extends Annotation> annotationType, boolean considerMetaAnnotations, boolean considerInterfaces) {
@@ -88,6 +91,7 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 	/**
 	 * Return the {@link Annotation} that this instance is using to filter
 	 * candidates.
+	 *
 	 * @since 5.0
 	 */
 	public final Class<? extends Annotation> getAnnotationType() {
@@ -96,7 +100,9 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 
 	@Override
 	protected boolean matchSelf(MetadataReader metadataReader) {
+		// 通过metadataReader获取注解信息
 		AnnotationMetadata metadata = metadataReader.getAnnotationMetadata();
+		// 判断是否存在指定注解
 		return metadata.hasAnnotation(this.annotationType.getName()) ||
 				(this.considerMetaAnnotations && metadata.hasMetaAnnotation(this.annotationType.getName()));
 	}
@@ -115,21 +121,23 @@ public class AnnotationTypeFilter extends AbstractTypeHierarchyTraversingFilter 
 
 	@Nullable
 	protected Boolean hasAnnotation(String typeName) {
+		// 如果父类是Object，直接返回不符合
 		if (Object.class.getName().equals(typeName)) {
 			return false;
-		}
-		else if (typeName.startsWith("java")) {
+		} else if (typeName.startsWith("java")) {
+			// java开头的类，也就是JDK的类
 			if (!this.annotationType.getName().startsWith("java")) {
 				// Standard Java types do not have non-standard annotations on them ->
 				// skip any load attempt, in particular for Java language interfaces.
 				return false;
 			}
 			try {
+				// 根据类型获取Class字节码信息，此时是父类的
 				Class<?> clazz = ClassUtils.forName(typeName, getClass().getClassLoader());
+				// 判断父类的注解
 				return ((this.considerMetaAnnotations ? AnnotationUtils.getAnnotation(clazz, this.annotationType) :
 						clazz.getAnnotation(this.annotationType)) != null);
-			}
-			catch (Throwable ex) {
+			} catch (Throwable ex) {
 				// Class not regularly loadable - can't determine a match that way.
 			}
 		}

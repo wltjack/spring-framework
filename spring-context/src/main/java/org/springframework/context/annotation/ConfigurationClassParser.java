@@ -216,6 +216,7 @@ class ConfigurationClassParser {
 	 * @throws IOException
 	 */
 	protected final void parse(AnnotationMetadata metadata, String beanName) throws IOException {
+		// 描述配置的对象
 		processConfigurationClass(new ConfigurationClass(metadata, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
 
@@ -282,6 +283,18 @@ class ConfigurationClassParser {
 	 * Apply processing and build a complete {@link ConfigurationClass} by reading the
 	 * annotations, members and methods from the source class. This method can be called
 	 * multiple times as relevant sources are discovered.
+	 * 解析配置类（从首个配置类开始）
+	 * 1、判断是否加了@Component
+	 * 1-1、解析是否有内部类
+	 * 1-2、解析处理@PropertySource
+	 * 1-3、处理@ComponentScan
+	 * 1-4、处理@Import
+	 * 1-5、处理@ImportResource
+	 * 1-6、处理@Bean方法
+	 * 1-7、处理父接口中加了@Bean的默认方法（default 方法）
+	 * 1-8、处理父类的相关注解
+	 *
+	 *
 	 * @param configClass the configuration class being build
 	 * @param sourceClass a source class
 	 * @return the superclass, or {@code null} if none found or previously processed
@@ -320,6 +333,8 @@ class ConfigurationClassParser {
 				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
+				// 解析ComponentScan配置信息，完成扫描(符合IncludeFilter的添加,符合excludeFilter的排除)
+				// 扫描出来的已经放入到beanDefinitionMap中了
 				Set<BeanDefinitionHolder> scannedBeanDefinitions =
 						this.componentScanParser.parse(componentScan, sourceClass.getMetadata().getClassName());
 				// Check the set of scanned definitions for any further config classes and parse recursively if needed
@@ -339,6 +354,7 @@ class ConfigurationClassParser {
 
 		// Process any @Import annotations
 		// 处理@import注解
+		// getImports(sourceClass) -> 获取当前配置类上面所有的Import注解的值
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
 		// Process any @ImportResource annotations
@@ -381,10 +397,11 @@ class ConfigurationClassParser {
 
 	/**
 	 * Register member (nested) classes that happen to be configuration classes themselves.
+	 * 内部类也是一个配置类，配置类上有@Configuration注解，该注解继承@Component
 	 */
 	private void processMemberClasses(ConfigurationClass configClass, SourceClass sourceClass,
 			Predicate<String> filter) throws IOException {
-
+		// 获取类的内部类
 		Collection<SourceClass> memberClasses = sourceClass.getMemberClasses();
 		if (!memberClasses.isEmpty()) {
 			List<SourceClass> candidates = new ArrayList<>(memberClasses.size());

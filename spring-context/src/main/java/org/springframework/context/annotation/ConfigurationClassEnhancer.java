@@ -70,7 +70,7 @@ import org.springframework.util.ReflectionUtils;
  * @see #enhance
  * @see ConfigurationClassPostProcessor
  */
-class ConfigurationClassEnhancer {
+public class ConfigurationClassEnhancer {
 
 	// The callbacks to use. Note that these callbacks must be stateless.
 	private static final Callback[] CALLBACKS = new Callback[] {
@@ -171,7 +171,7 @@ class ConfigurationClassEnhancer {
 	 * A {@link CallbackFilter} that works by interrogating {@link Callback Callbacks} in the order
 	 * that they are defined via {@link ConditionalCallback}.
 	 */
-	private static class ConditionalCallbackFilter implements CallbackFilter {
+	public static class ConditionalCallbackFilter implements CallbackFilter {
 
 		private final Callback[] callbacks;
 
@@ -207,7 +207,7 @@ class ConfigurationClassEnhancer {
 	 * Also exposes the application ClassLoader as thread context ClassLoader for the time of
 	 * class generation (in order for ASM to pick it up when doing common superclass resolution).
 	 */
-	private static class BeanFactoryAwareGeneratorStrategy extends
+	public static class BeanFactoryAwareGeneratorStrategy extends
 			ClassLoaderAwareGeneratorStrategy {
 
 		public BeanFactoryAwareGeneratorStrategy(@Nullable ClassLoader classLoader) {
@@ -234,7 +234,7 @@ class ConfigurationClassEnhancer {
 	 * {@code @Configuration} class instances for the purpose of recording the {@link BeanFactory}.
 	 * @see EnhancedConfiguration
 	 */
-	private static class BeanFactoryAwareMethodInterceptor implements MethodInterceptor, ConditionalCallback {
+	public static class BeanFactoryAwareMethodInterceptor implements MethodInterceptor, ConditionalCallback {
 
 		@Override
 		@Nullable
@@ -271,7 +271,7 @@ class ConfigurationClassEnhancer {
 	 * @see Bean
 	 * @see ConfigurationClassEnhancer
 	 */
-	private static class BeanMethodInterceptor implements MethodInterceptor, ConditionalCallback {
+	public static class BeanMethodInterceptor implements MethodInterceptor, ConditionalCallback {
 
 		/**
 		 * Enhance a {@link Bean @Bean} method to check the supplied BeanFactory for the

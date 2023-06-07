@@ -502,6 +502,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
+			// 给BeanPostProcessor一个机会提前返回一个代理对象而不是创建目标对象
+			/**
+			 * 第一次调用Spring的后置处理器
+			 * 在bean的初始化前应用后置处理器，如果后置处理器返回的bean不为空
+			 * 如果用户自定义了代理源，那么在这里就有可能会返回一个代理对象，Spring的AOP的实现可能会发生在这里
+			 */
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
 			if (bean != null) {
 				return bean;
@@ -597,6 +603,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 			// 为避免后期循环依赖，可以在bean初始化完成前将创建实例的ObjectFactory加入工厂
 			// 将当前正在创建的bean的单例工厂放入到SingletonFactories集合中（三级缓存）
+			// 将该实例对应的singletonFactory加入到singletonFactoryMap中，这是解决循环依赖的关键步骤之一
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
 		}
 
@@ -1431,6 +1438,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
 		// state of the bean before properties are set. This can be used, for example,
 		// to support styles of field injection.
+		// 判断容器是否需要属性注入
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof InstantiationAwareBeanPostProcessor) {
