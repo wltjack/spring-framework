@@ -1,4 +1,4 @@
-package com.wltjack.springdebug.test.context;
+package com.wltjack.springdebug.test.context.bfpp;
 
 import com.wltjack.springdebug.test.context.bfpp.A2;
 import com.wltjack.springdebug.test.context.bfpp.A4;

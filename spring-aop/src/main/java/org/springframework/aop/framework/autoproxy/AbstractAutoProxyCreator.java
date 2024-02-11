@@ -329,6 +329,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	/**
 	 * Wrap the given bean if necessary, i.e. if it is eligible for being proxied.
+	 * 如有必要，包装给定的bean，例如，如果它有资格被代理。
 	 * @param bean the raw bean instance
 	 * @param beanName the name of the bean
 	 * @param cacheKey the cache key for metadata access
@@ -339,11 +340,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
-		// 当前这个bean不用被代理
+		// 当前这个bean不用被代理。advisedBeans表示已经判断过了的bean
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
-		// 先判断当前bean是不是要进行AOP，比如当前bean的类型是Pointcut、Advice、Advisor等，则不需要进行AOP
+		// 先判断当前bean是不是要进行AOP，比如当前bean的类型是Pointcut、Advice、Advisor等，则不需要进行AOP（切面Bean）
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
@@ -351,9 +352,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		// Create proxy if we have advice.
 		// 获取当前beanClass所匹配的advisors
+		// 此处根据类及类中的方法去匹配到Interceptor（也就是Advice），是否是被切面的对象
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		// 如果匹配的advisors不等于null，那么则进行代理，并返回代理对象
 		if (specificInterceptors != DO_NOT_PROXY) {
+			// advisedBeans记录某个Bean已经进行过AOP了
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
 			// 基于bean对象和Advisors创建代理对象
 			Object proxy = createProxy(
